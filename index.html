@@ -1,0 +1,428 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #36d1dc, #5b86e5);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .title {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+        }
+
+        .title h1 {
+            font-size: 38px;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            font-size: 16px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-box button {
+            padding: 15px 22px;
+            border: none;
+            border-radius: 12px;
+            background: #111827;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .search-box button:hover {
+            background: #000;
+        }
+
+        .error {
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .weather-card {
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+
+        .location {
+            text-align: center;
+        }
+
+        .location h2 {
+            font-size: 30px;
+            color: #111827;
+        }
+
+        .location p {
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .main-weather {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .main-weather img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .temperature {
+            font-size: 55px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .condition {
+            color: #6b7280;
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .detail {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .detail-icon {
+            font-size: 25px;
+        }
+
+        .detail small {
+            display: block;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .detail strong {
+            color: #111827;
+        }
+
+        .updated {
+            text-align: center;
+            margin-top: 20px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .welcome {
+            background: rgba(255,255,255,0.96);
+            border-radius: 25px;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .welcome h2 {
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #6b7280;
+        }
+
+        @media (max-width: 500px) {
+
+            .title h1 {
+                font-size: 30px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box button {
+                width: 100%;
+            }
+
+            .weather-card {
+                padding: 20px;
+            }
+
+            .temperature {
+                font-size: 45px;
+            }
+
+            .details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">
+        <h1>🌤️ Weather App</h1>
+        <p>Search any city to check current weather</p>
+    </div>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="location"
+            placeholder="Enter city name..."
+        >
+
+        <button onclick="getWeather()">
+            Search
+        </button>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <div id="welcome" class="welcome">
+        <div class="welcome-icon">🌍</div>
+        <h2>Search for a location</h2>
+        <p>Enter a city name above to see its weather.</p>
+    </div>
+
+    <div id="weatherCard" class="weather-card hidden">
+
+        <div class="location">
+            <h2 id="city">--</h2>
+            <p id="country">--</p>
+        </div>
+
+        <div class="main-weather">
+
+            <img id="weatherIcon" src="" alt="Weather">
+
+            <div>
+                <div class="temperature">
+                    <span id="temperature">--</span>°C
+                </div>
+
+                <div id="condition" class="condition">
+                    --
+                </div>
+            </div>
+
+        </div>
+
+        <div class="details">
+
+            <div class="detail">
+                <div class="detail-icon">🌡️</div>
+                <div>
+                    <small>Feels Like</small>
+                    <strong id="feelsLike">--°C</strong>
+                </div>
+            </div>
+
+            <div class="detail">
+                <div class="detail-icon">💧</div>
+                <div>
+                    <small>Humidity</small>
+                    <strong id="humidity">--%</strong>
+                </div>
+            </div>
+
+            <div class="detail">
+                <div class="detail-icon">💨</div>
+                <div>
+                    <small>Wind</small>
+                    <strong id="wind">-- km/h</strong>
+                </div>
+            </div>
+
+            <div class="detail">
+                <div class="detail-icon">☀️</div>
+                <div>
+                    <small>UV Index</small>
+                    <strong id="uv">--</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="updated">
+            Last Updated: <span id="updated">--</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // Your WeatherAPI key
+    const API_KEY = "0329e2afcac246a0880141551262809";
+
+    async function getWeather() {
+
+        const location = document
+            .getElementById("location")
+            .value
+            .trim();
+
+        const error = document.getElementById("error");
+
+        const weatherCard =
+            document.getElementById("weatherCard");
+
+        const welcome =
+            document.getElementById("welcome");
+
+        if (location === "") {
+            error.textContent = "Please enter a city name.";
+            return;
+        }
+
+        error.textContent = "";
+
+        try {
+
+            const API_URL =
+                `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${encodeURIComponent(location)}&aqi=no`;
+
+            const response = await fetch(API_URL);
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error?.message ||
+                    "Weather data could not be found."
+                );
+            }
+
+            // Location
+            document.getElementById("city").textContent =
+                data.location.name;
+
+            document.getElementById("country").textContent =
+                `${data.location.region ? data.location.region + ", " : ""}${data.location.country}`;
+
+            // Temperature
+            document.getElementById("temperature").textContent =
+                Math.round(data.current.temp_c);
+
+            // Weather condition
+            document.getElementById("condition").textContent =
+                data.current.condition.text;
+
+            // Weather icon
+            document.getElementById("weatherIcon").src =
+                "https:" + data.current.condition.icon;
+
+            // Feels like
+            document.getElementById("feelsLike").textContent =
+                Math.round(data.current.feelslike_c) + "°C";
+
+            // Humidity
+            document.getElementById("humidity").textContent =
+                data.current.humidity + "%";
+
+            // Wind
+            document.getElementById("wind").textContent =
+                data.current.wind_kph + " km/h";
+
+            // UV
+            document.getElementById("uv").textContent =
+                data.current.uv;
+
+            // Last updated
+            document.getElementById("updated").textContent =
+                data.current.last_updated;
+
+            // Show weather
+            welcome.classList.add("hidden");
+            weatherCard.classList.remove("hidden");
+
+        } catch (err) {
+
+            weatherCard.classList.add("hidden");
+            welcome.classList.remove("hidden");
+
+            error.textContent =
+                err.message || "Something went wrong.";
+        }
+    }
+
+
+    // Press Enter to search
+    document
+        .getElementById("location")
+        .addEventListener("keydown", function(event) {
+
+            if (event.key === "Enter") {
+                getWeather();
+            }
+
+        });
+
+</script>
+
+</body>
+</html>
+```
